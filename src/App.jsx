@@ -8,10 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Moon, Sun } from "lucide-react"
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3001"
-
 async function fetchContacts() {
-  const res = await fetch(`${API_BASE}/contacts`)
+  const res = await fetch("/contacts.json")
   if (!res.ok) throw new Error("Failed to load contacts")
   return res.json()
 }
