@@ -11,7 +11,8 @@ import { Moon, Sun } from "lucide-react"
 async function fetchContacts() {
   const res = await fetch("/contacts.json")
   if (!res.ok) throw new Error("Failed to load contacts")
-  return res.json()
+  const data = await res.json()
+  return data.contacts || []
 }
 
 const industries = ["Все", "Банки"]
