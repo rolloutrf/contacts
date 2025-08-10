@@ -19,7 +19,14 @@ const industries = ["Все", "Банки"]
 const functions = ["Все", "Design", "Development", "Product", "Marketing"]
 
 export default function App() {
-  const { data, isLoading, error } = useQuery({ queryKey: ["contacts"], queryFn: fetchContacts, staleTime: 1000 * 60 * 30 })
+  const { data, isLoading, error } = useQuery({ 
+    queryKey: ["contacts"], 
+    queryFn: fetchContacts, 
+    staleTime: 1000 * 60 * 30,
+    retry: 3
+  })
+  
+  console.log("App state:", { data, isLoading, error, dataLength: data?.length })
   const [query, setQuery] = useState("")
   const [ind, setInd] = useState("Все")
   const [fn, setFn] = useState("Все")
@@ -163,6 +170,12 @@ export default function App() {
 
       {isLoading && <p className="text-zinc-500 dark:text-zinc-400">Загрузка…</p>}
       {error && <p className="text-red-600">Ошибка: {String(error.message)}</p>}
+      
+      {/* Debug info */}
+      <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900 rounded text-sm">
+        <p>Отладка: isLoading={String(isLoading)}, error={error?.message || 'нет'}, data={data ? `${data.length} контактов` : 'нет данных'}</p>
+      </div>
+      
       {!isLoading && !error && displayedList.length === 0 && <p className="text-zinc-500 dark:text-zinc-400">Ничего не найдено</p>}
       
       {!isLoading && !error && filteredAndSortedList.length > 0 && (
