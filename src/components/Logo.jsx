@@ -1,0 +1,23 @@
+import React from "react"
+
+export default function Logo({ className = "" }) {
+  return (
+    <div className={`inline-flex items-center gap-4 ${className}`}>
+      <svg 
+        width="32" 
+        height="32" 
+        viewBox="0 0 32 32" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className="h-12 w-12 flex-shrink-0 text-zinc-900 dark:text-zinc-100"
+      >
+        <rect width="9.8342" height="10.2714" fill="currentColor"/>
+        <rect x="21.0731" y="20.3243" width="10.9269" height="10.927" rx="5.46344" fill="currentColor"/>
+        <path d="M10.585 10.463C17.9006 2.55139 26.0306 -1.73524 28.9044 0.864345C31.8333 3.51424 28.1908 12.3134 20.7686 20.5186C13.3465 28.7239 4.95576 33.2276 2.02642 30.5782C-0.902741 27.9285 2.73912 19.1292 10.1612 10.9239C10.2675 10.8063 10.3757 10.6904 10.4825 10.5743V20.7335H20.3174V10.463H10.585Z" fill="currentColor"/>
+      </svg>
+      <span className="text-3xl font-semibold text-zinc-900 dark:text-zinc-100">
+        Контакты
+      </span>
+    </div>
+  )
+}
