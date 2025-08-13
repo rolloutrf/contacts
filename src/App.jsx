@@ -8,23 +8,57 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Moon, Sun } from "lucide-react"
 
-async function fetchContacts() {
-  const res = await fetch("/contacts.json")
+async function getContacts() {
+  const res = await fetch(`${import.meta.env.BASE_URL}contacts.json`);
   if (!res.ok) throw new Error("Failed to load contacts")
   const data = await res.json()
-  return data.contacts || []
+  return data || []
 }
 
-const industries = ["Все", "Банки"]
-const functions = ["Все", "Design", "Development", "Product", "Marketing"]
+
+
+function getIndustryCategory(companyName) {
+  const name = companyName.toLowerCase();
+  if (name.includes("банк") || name.includes("money") || name.includes("fintech") || name.includes("paypal") || name.includes("revolut")) return "Банки";
+  if (name.includes("авито")) return "IT";
+  if (name.includes("газпром")) return "Энергетика";
+  if (name.includes("мтс")) return "Телеком";
+  if (name.includes("яндекс")) return "IT";
+  if (name.includes("озон")) return "E-commerce";
+  if (name.includes("самолет")) return "Недвижимость";
+  return "Другое";
+}
+
+function getFunctionCategory(positionTitle) {
+  const title = positionTitle.toLowerCase();
+  if (title.includes("product") || title.includes("owner") || title.includes("manager")) return "Product";
+  if (title.includes("design") || title.includes("designer") || title.includes("art-director") || title.includes("ux") || title.includes("ui") || title.includes("illustrator")) return "Design";
+  if (title.includes("developer") || title.includes("engineer") || title.includes("cto") || title.includes("architect") || title.includes("frontend") || title.includes("backend") || title.includes("data scientist")) return "Development";
+  if (title.includes("marketing")) return "Marketing";
+  if (title.includes("hr")) return "HR";
+  if (title.includes("ceo") || title.includes("president") || title.includes("founder")) return "CEO";
+  return "Other";
+}
 
 export default function App() {
   const { data, isLoading, error } = useQuery({ 
     queryKey: ["contacts"], 
-    queryFn: fetchContacts, 
+    queryFn: getContacts, 
     staleTime: 1000 * 60 * 30,
     retry: 3
   })
+
+  const functions = useMemo(() => {
+    if (!data) return ["Все"]
+        const uniqueFunctions = new Set(data.map(c => getFunctionCategory(c.employee_position_title)))
+    return ["Все", ...Array.from(uniqueFunctions).sort()]
+  }, [data])
+
+  const industries = useMemo(() => {
+    if (!data) return ["Все"]
+    const uniqueIndustries = new Set(data.map(c => getIndustryCategory(c.company_name_ru)))
+    return ["Все", ...Array.from(uniqueIndustries).sort()]
+  }, [data])
   
   const [query, setQuery] = useState("")
   const [ind, setInd] = useState("Все")
@@ -60,8 +94,8 @@ export default function App() {
     let filtered = data.filter((c) => {
       const s = `${c.employee_first_name_ru} ${c.employee_last_name_ru} ${c.company_name_ru}`.toLowerCase()
       const passText = s.includes(query.toLowerCase())
-      const passInd = ind === "Все" || c.industry === ind
-      const passFn = fn === "Все" || c.function === fn
+      const passInd = ind === "Все" || getIndustryCategory(c.company_name_ru) === ind
+      const passFn = fn === "Все" || getFunctionCategory(c.employee_position_title) === fn
       return passText && passInd && passFn
     })
 
@@ -143,6 +177,7 @@ export default function App() {
             {industries.map((x)=> <SelectItem key={x} value={x}>{x}</SelectItem>)}
           </SelectContent>
         </Select>
+        
         <Select value={fn} onValueChange={setFn}>
           <SelectTrigger className="max-w-[180px]">
             <SelectValue />

@@ -2,6 +2,29 @@ import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 
+function getIndustryCategory(companyName) {
+  const name = companyName.toLowerCase();
+  if (name.includes("банк") || name.includes("money") || name.includes("fintech") || name.includes("paypal") || name.includes("revolut")) return "Банки";
+  if (name.includes("авито")) return "IT";
+  if (name.includes("газпром")) return "Энергетика";
+  if (name.includes("мтс")) return "Телеком";
+  if (name.includes("яндекс")) return "IT";
+  if (name.includes("озон")) return "E-commerce";
+  if (name.includes("самолет")) return "Недвижимость";
+  return "Другое";
+}
+
+function getFunctionCategory(positionTitle) {
+  const title = positionTitle.toLowerCase();
+  if (title.includes("product") || title.includes("owner") || title.includes("manager")) return "Product";
+  if (title.includes("design") || title.includes("designer") || title.includes("art-director") || title.includes("ux") || title.includes("ui") || title.includes("illustrator")) return "Design";
+  if (title.includes("developer") || title.includes("engineer") || title.includes("cto") || title.includes("architect") || title.includes("frontend") || title.includes("backend") || title.includes("data scientist")) return "Development";
+  if (title.includes("marketing")) return "Marketing";
+  if (title.includes("hr")) return "HR";
+  if (title.includes("ceo") || title.includes("president") || title.includes("founder")) return "CEO";
+  return "Other";
+}
+
 export default function ContactModal({ contact, onClose, open }) {
   if (!contact) return null
 
@@ -14,15 +37,16 @@ export default function ContactModal({ contact, onClose, open }) {
         
         <div className="flex gap-6">
           <img
-            src={contact.employee_photo_url}
+            src={`/photos/${contact.employee_photo_file}`}
             alt="Avatar"
             className="size-28 rounded-3xl object-cover"
           />
           <div className="flex-1 min-w-0">
             <div className="flex gap-2 mb-2">
-              <Badge variant="default">{contact.industry}</Badge>
-              <Badge variant="success">{contact.function}</Badge>
+              <Badge variant="secondary">{getIndustryCategory(contact.company_name_ru)}</Badge>
+              <Badge variant="default">{getFunctionCategory(contact.employee_position_title)}</Badge>
             </div>
+            
             <h2 className="text-2xl sm:text-3xl font-semibold mb-2">
               {contact.employee_first_name_ru} {contact.employee_last_name_ru}
             </h2>
@@ -46,13 +70,13 @@ export default function ContactModal({ contact, onClose, open }) {
           </div>
         </div>
 
-        {contact.facebook_link && (
+        {contact['employee_facebook.link'] && (
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-3">Контакты</h3>
             <div className="flex flex-col gap-y-2">
               <Row 
                 label="Facebook" 
-                value={contact.facebook_link} 
+                value={contact['employee_facebook.link']} 
                 isLink={true}
               />
             </div>

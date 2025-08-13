@@ -1,7 +1,29 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { ChevronRight } from "lucide-react"
+
+function getIndustryCategory(companyName) {
+  const name = companyName.toLowerCase();
+  if (name.includes("банк") || name.includes("money") || name.includes("fintech") || name.includes("paypal") || name.includes("revolut")) return "Банки";
+  if (name.includes("авито")) return "IT";
+  if (name.includes("газпром")) return "Энергетика";
+  if (name.includes("мтс")) return "Телеком";
+  if (name.includes("яндекс")) return "IT";
+  if (name.includes("озон")) return "E-commerce";
+  if (name.includes("самолет")) return "Недвижимость";
+  return "Другое";
+}
+
+function getFunctionCategory(positionTitle) {
+  const title = positionTitle.toLowerCase();
+  if (title.includes("product") || title.includes("owner") || title.includes("manager")) return "Product";
+  if (title.includes("design") || title.includes("designer") || title.includes("art-director") || title.includes("ux") || title.includes("ui") || title.includes("illustrator")) return "Design";
+  if (title.includes("developer") || title.includes("engineer") || title.includes("cto") || title.includes("architect") || title.includes("frontend") || title.includes("backend") || title.includes("data scientist")) return "Development";
+  if (title.includes("marketing")) return "Marketing";
+  if (title.includes("hr")) return "HR";
+  if (title.includes("ceo") || title.includes("president") || title.includes("founder")) return "CEO";
+  return "Other";
+}
 
 export default function ContactCard({ contact, onOpen }) {
   return (
@@ -24,7 +46,7 @@ export default function ContactCard({ contact, onOpen }) {
 
       <div className="flex flex-col">
         <img
-          src={contact.employee_photo_url}
+          src={`/photos/${contact.employee_photo_file}`}
           alt={`${contact.employee_first_name_ru} ${contact.employee_last_name_ru}`}
           className="size-14 rounded-xl object-cover mb-4"
         />
@@ -53,9 +75,10 @@ export default function ContactCard({ contact, onOpen }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Badge variant="default">{contact.industry}</Badge>
-        <Badge variant="success">{contact.function}</Badge>
+      
+    <div className="flex flex-wrap gap-2">
+        <Badge variant="secondary">{getIndustryCategory(contact.company_name_ru)}</Badge>
+        <Badge variant="default">{getFunctionCategory(contact.employee_position_title)}</Badge>
       </div>
     </article>
   )
