@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Moon, Sun } from "lucide-react"
 
 async function getContacts() {
-  const res = await fetch(`${import.meta.env.BASE_URL}contacts.json`);
+  const res = await fetch('/contacts.json');
   if (!res.ok) throw new Error("Failed to load contacts")
   const data = await res.json()
   return data || []
@@ -148,8 +148,25 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen px-6 py-6 max-w-7xl mx-auto bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+        <p>Загрузка контактов...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen px-6 py-6 max-w-7xl mx-auto bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+        <p>Ошибка загрузки: {error.message}</p>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-dvh px-6 py-6 max-w-7xl mx-auto bg-zinc-100 dark:bg-zinc-900">
+    <div className="min-h-screen px-6 py-6 max-w-7xl mx-auto bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
       <header className="flex items-center justify-between mb-6">
         <Logo />
         <Button 
