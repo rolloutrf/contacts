@@ -1,8 +1,15 @@
-name: Deploy to Yandex Object Storage (contacts)
+name: Deploy to Yandex Object Storage
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: {}
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ENDPOINT_URL: ${{ vars.ENDPOINT_URL }}
+  BUCKET_NAME: ${{ vars.BUCKET_NAME }}
+  BUILD_DIR: ${{ vars.BUILD_DIR || 'dist' }}
 
 jobs:
   build-and-deploy:
@@ -12,10 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Если это Vite/React или другой Node-проект — собираем
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '20'
 
       - name: Install deps
         run: npm ci
@@ -23,32 +31,35 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: AWS CLI
-        uses: aws-actions/setup-cli@v2
-
-      - name: Upload static assets (immutable)
+      # AWS CLI уже предустановлен на раннере, просто прокинем креды через env
+      - name: Configure AWS creds (for Yandex)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
         run: |
-          aws s3 sync ./dist "s3://${AWS_S3_BUCKET}/" \
-            --endpoint-url "https://storage.yandexcloud.net" \
+          aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile yandex
+          aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile yandex
+          aws configure set region "$AWS_DEFAULT_REGION" --profile yandex
+          aws configure set output json --profile yandex
+
+      # 1) Нефайлы .html заливаем с длинным кэшированием (immutable)
+      - name: Upload static assets (immutable)
+        run: |
+          aws s3 sync "$BUILD_DIR" "s3://$BUCKET_NAME/" \
+            --endpoint-url "$ENDPOINT_URL" \
             --exclude "*.html" \
             --cache-control "public, max-age=31536000, immutable" \
             --acl public-read \
-            --delete
+            --delete \
+            --profile yandex
 
+      # 2) HTML — без кэша
       - name: Upload HTML (no-cache)
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
         run: |
-          aws s3 sync ./dist "s3://${AWS_S3_BUCKET}/" \
-            --endpoint-url "https://storage.yandexcloud.net" \
+          aws s3 sync "$BUILD_DIR" "s3://$BUCKET_NAME/" \
+            --endpoint-url "$ENDPOINT_URL" \
             --exclude "*" --include "*.html" \
             --cache-control "no-cache, no-store, must-revalidate" \
-            --acl public-read
+            --acl public-read \
+            --profile yandex
