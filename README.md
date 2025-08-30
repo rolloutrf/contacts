@@ -12,3 +12,7 @@ npm run dev   # запускает Vite на 5173
 - Тёмная тема (переключатель в хедере)
 - React Query + Devtools
 - TailwindCSS
+
+## Развертывание
+
+Проект автоматически развертывается в Yandex Object Storage при каждом пуше в ветку `main` с помощью GitHub Actions.
