@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Moon, Sun } from "lucide-react"
 
 async function getContacts() {
-  const res = await fetch('/contacts.json');
+  const res = await fetch('http://localhost:3001/api/contacts');
   if (!res.ok) throw new Error("Failed to load contacts")
   const data = await res.json()
   return data || []
@@ -233,7 +233,7 @@ export default function App() {
 
       <section className="grid-cards">
         {displayedList.map((c) => (
-          <ContactCard key={c.id} contact={c} onOpen={onOpen} />
+          <ContactCard key={c.employee_id} contact={c} onOpen={onOpen} />
         ))}
       </section>
 

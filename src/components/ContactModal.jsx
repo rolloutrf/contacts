@@ -70,13 +70,13 @@ export default function ContactModal({ contact, onClose, open }) {
           </div>
         </div>
 
-        {contact['employee_facebook.link'] && (
+        {contact.employee_facebook_link && (
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-3">Контакты</h3>
             <div className="flex flex-col gap-y-2">
               <Row 
                 label="Facebook" 
-                value={contact['employee_facebook.link']} 
+                value={contact.employee_facebook_link} 
                 isLink={true}
               />
             </div>

@@ -1,17 +1,53 @@
-# Contacts App v9.5 (modal-ready)
+# Contacts App v9.5 (with PostgreSQL backend)
 
-Команда запуска:
+## Запуск приложения
+
+### Требования
+- Node.js 18+
+- PostgreSQL 15
+
+### Backend (PostgreSQL + Express)
+
 ```bash
+cd server
 npm install
-npm run api   # поднимает json-server на 3001
+
+# Создать базу данных и таблицы
+npm run db:create
+
+# Импортировать данные из JSON
+npm run db:seed
+
+# Запустить сервер (порт 3001)
+npm start
+# или в режиме разработки с авто-перезагрузкой:
+npm run dev
+```
+
+### Frontend (React + Vite)
+
+```bash
+# В корне проекта
+npm install
 npm run dev   # запускает Vite на 5173
 ```
-Фичи:
+
+## Фичи
 - Карточки + модалка с контактами
-- Поиск/фильтры
+- Поиск/фильтры по имени, компании, индустрии, функции
 - Тёмная тема (переключатель в хедере)
 - React Query + Devtools
-- TailwindCSS
+- TailwindCSS + Radix UI
+- REST API с PostgreSQL
+- CRUD операции для контактов
+
+## API Endpoints
+
+- `GET /api/contacts` - получить все контакты
+- `GET /api/contacts/:id` - получить контакт по ID
+- `POST /api/contacts` - создать новый контакт
+- `PUT /api/contacts/:id` - обновить контакт
+- `DELETE /api/contacts/:id` - удалить контакт
 
 ## Развертывание
 
