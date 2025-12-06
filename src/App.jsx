@@ -12,7 +12,13 @@ async function getContacts() {
   const res = await fetch('/contacts.json');
   if (!res.ok) throw new Error("Failed to load contacts")
   const data = await res.json()
-  return data || []
+  const list = data || []
+
+  // Нормализуем поле Facebook: из employee_facebook.link делаем employee_facebook_link
+  return list.map((c) => ({
+    ...c,
+    employee_facebook_link: c.employee_facebook_link ?? c["employee_facebook.link"],
+  }))
 }
 
 
