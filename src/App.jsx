@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Moon, Sun } from "lucide-react"
 
 async function getContacts() {
-  const res = await fetch('http://localhost:3001/api/contacts');
+  const res = await fetch('/contacts.json');
   if (!res.ok) throw new Error("Failed to load contacts")
   const data = await res.json()
   return data || []
